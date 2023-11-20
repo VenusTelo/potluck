@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Kalam&family=Montserrat&family=Parisienne&display=swap" rel="stylesheet">
+    <title>Jazz and Danny's Potluck</title>
+    <style>
+        body {
+	    font-family: 'Kalam', cursive;
+            background-color: #F2F1EE;
+            margin: 0px;
+	    display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+	.special-heading {
+        font-family: 'Parisienne', cursive;
+	}
+
+        h1 {
+            color: #884324;
+	    font-size: min(90%, 70px);
+	    margin-bottom: 10px;
+	    align-items: center;
+	    justify-content: center
+	    text-shadow: 2px 2px 2px #E98D44, -2px -2px 2px #E98D44, 2px -2px 2px #E98D44, -2px 2px 2px #E98D44;
+        }
+
+        h2 {
+            color: #884324;
+            margin-top: 20px;
+	    font-size: 40px;
+        }
+
+        form {
+	    width: min(90%, 800px);
+            background-color: #F1A96E;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+	    font-size: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #884324;
+        }
+
+        select, input {
+            width: min(80%, 7500px);
+            padding: 10px;
+            margin-bottom: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+	    background-color: #EBC7AB;
+	    font-family: 'Montserrat', cursive;
+	    color: #884324;
+        }
+
+        button {
+            background-color: #C05125;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+	    font-family: 'Monserrat', cursive;
+        }
+
+        button:hover {
+            background-color: #593020;
+        }
+
+    .grid-container {
+        display: flex;
+    	flex-direction: column; /* Stack items vertically on small screens */
+    	align-items: center;
+    	margin-left: 0;
+    }
+
+    .grid-item {
+        background-color: #EBC7AB;
+        border-bottom-left-radius: 20px;
+        border-bottom-right-radius: 20px;
+	border-top-left-radius: 20px;
+	border-top-right-radius: 20px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        position: relative;
+        width: min(600px, 90%); /* Adjust the default width as needed */
+	min-height: 300px;
+        margin-bottom: 10px; /* Adjust the default margin as needed */
+    }
+
+    .category-name {
+        position: absolute;
+	font-size: 20px;
+        top: 0;
+        left: 0;
+        right: 0;
+        text-align: center;
+        background-color: #F1A96E;
+        padding: 4px;
+        font-weight: bold;
+	color: #884324;
+        border-bottom-left-radius: 0px;
+        border-bottom-right-radius: 0px;
+	border-top-left-radius: 20px;
+	border-top-right-radius: 20px;
+    }
+
+    .dish-names {
+        margin-top: 1px;
+	margin-left: 15px;
+	font-size: 20px;
+	color: #884324;
+        white-space: pre-line; /* Preserve white spaces and break lines */
+        overflow-wrap: break-word; /* Break words that exceed the container width */
+    }
+    </style>
+</head>
+<body>
+    <h1 class="special-heading">Friendsgiving Potluck</h1>
+    <p>Please select a category and enter the dish you're bringing</p>
+
+    <form id="dishForm">
+        <label for="category">Select Dish Category:</label>
+        <select id="category" name="category">
+            <option value="Main Course">Main Course</option>
+            <option value="Side">Side</option>
+            <option value="Dessert">Dessert</option>
+            <option value="Beverage">Beverage</option>
+        </select>
+
+        <br>
+
+        <label for="dish">Enter Dish:</label>
+        <input type="text" id="dish" name="dish" required>
+
+        <br>
+
+        <button type="button" onclick="submitForm()">Submit</button>
+    </form>
+
+    <h2 class="special-heading">Current Dish Selections</h2>
+    <div class="grid-container">
+        {% for category in ['Main Course', 'Side', 'Dessert', 'Beverage'] %}
+            <div class="grid-item">
+                <div class="category-name">{{ category }}</div>
+                <div class="dish-names">
+                    {% for dish in dishes[category] %}
+                        &middot; {{ dish }}<br>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var dishNames = document.querySelectorAll(".dish-names");
+            dishNames.forEach(function(dishName) {
+                var words = dishName.textContent.split(" ");
+                var maxWordLength = 30; // Adjust this value based on your preference
+                var formattedText = words.map(function(word) {
+                    return word.length > maxWordLength ? hyphenateWord(word) : word;
+                });
+                dishName.innerHTML = formattedText.join(" ");
+            });
+        });
+
+        function hyphenateWord(word) {
+            var hyphenatedWord = "";
+            for (var i = 0; i < word.length; i += 10) {
+                hyphenatedWord += word.substr(i, 10) + "-";
+            }
+            return hyphenatedWord.slice(0, -1); // Remove the last hyphen
+        }
+
+        let dishCounter = 1;
+
+        function submitForm() {
+            var category = document.getElementById('category').value;
+            var dish = document.getElementById('dish').value;
+
+            if (dish.trim() === "") {
+                alert('Please enter a dish.');
+                return;
+            }
+
+            var form = new FormData();
+            form.append('category', category);
+            form.append('dish', dish);
+
+            fetch('/submit', {
+                method: 'POST',
+                body: form
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.result === 'success') {
+                    alert('Dish submitted successfully!');
+                    location.reload();
+                } else if (data.result === 'exists') {
+                    var confirmation = confirm(`The dish '${data.dish}' already exists in the category '${data.category}'. Do you want to remove it?`);
+                    if (confirmation) {
+                        form.append('confirmation', 'yes');
+                        fetch('/submit', {
+                            method: 'POST',
+                            body: form
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.result === 'success') {
+                                alert('Dish removed successfully!');
+                                location.reload();
+                            } else {
+                                alert('Error removing dish. Please try again.');
+                            }
+                        });
+                    }
+                } else {
+                    alert('Error submitting dish. Please try again.');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
